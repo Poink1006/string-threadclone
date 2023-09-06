@@ -24,6 +24,7 @@ import {
   CommentValidation,
   StringsValidation,
 } from "@/lib/validations/strings";
+import { createStrings } from "@/lib/actions/strings.actions";
 
 interface Props {
   user: {
@@ -49,7 +50,14 @@ function PostString({ userId }: { userId: string }) {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof StringsValidation>) => {};
+  const onSubmit = async (values: z.infer<typeof StringsValidation>) => {
+    await createStrings({
+      text: values.strings,
+      author: userId,
+      communityId: null,
+      path: pathname,
+    });
+  };
 
   return (
     <>

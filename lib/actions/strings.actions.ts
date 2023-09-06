@@ -1,24 +1,31 @@
+"use server";
+
+import User from "../models/user.model";
+import Strings from "../models/strings.model";
 import { connectToDB } from "../mongoose";
-import { StringsValidation } from "../validations/strings";
 
 interface Params {
-  title: string;
+  text: string;
   author: string;
-  community: string;
+  communityId: string | null;
   path: string;
 }
 
-export default async function createStrings({
-  title,
-  author,
-  community,
-  path,
-}: Params) {
-  connectToDB();
+export async function createStrings({ text, author, path }: Params) {
+  try {
+    connectToDB();
 
-  const createdString = await StringsValidation.create({
-    title,
-    author,
-    community: null,
-  });
+    const createdThread = await Strings.create({
+      text,
+      author,
+      community: null,
+    });
+
+    // Update User model
+    await User.findByIdAndUpdate(author, {
+      $push: { threads: createdThread._id },
+    });
+  } catch (error: any) {
+    throw new Error(`Failed to create thread: ${error.message}`);
+  }
 }
