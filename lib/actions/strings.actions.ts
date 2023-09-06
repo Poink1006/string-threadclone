@@ -1,3 +1,6 @@
+import { connectToDB } from "../mongoose";
+import { StringsValidation } from "../validations/strings";
+
 interface Params {
   title: string;
   author: string;
@@ -10,4 +13,12 @@ export default async function createStrings({
   author,
   community,
   path,
-}: Params) {}
+}: Params) {
+  connectToDB();
+
+  const createdString = await StringsValidation.create({
+    title,
+    author,
+    community: null,
+  });
+}
